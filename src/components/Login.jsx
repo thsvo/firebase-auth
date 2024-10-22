@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { AuthContext } from "./AuthProvider/AuthProvider";
 
 const Login = () => {
-  const { loginUser } = useContext(AuthContext);
+  const { loginUser, googleLogin, setUser } = useContext(AuthContext);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -10,6 +10,11 @@ const Login = () => {
     const password = e.target.password.value;
     console.log(email, password);
     loginUser(email, password);
+  };
+  const haldlegoogleLogin = () => {
+    googleLogin()
+      .then((result) => setUser(result.user))
+      .catch((error) => console.log(error.message));
   };
 
   return (
@@ -36,6 +41,10 @@ const Login = () => {
 
         <div className="pt-5">
           <button className="btn btn-primary w-full ">Login</button>
+          <br /> <br />
+          <button onClick={haldlegoogleLogin} className="btn btn-primary">
+            Google login
+          </button>
         </div>
       </form>
     </div>
