@@ -1,18 +1,39 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "./AuthProvider/AuthProvider";
 
 const Register = () => {
-  const { registerUser } = useContext(AuthContext);
+  const { registerUser, setUser, authInfo } = useContext(AuthContext);
 
-  const authInfo = useContext(AuthContext);
-  console.log(authInfo);
+  const [error, setError] = useState(null);
 
   const handleRegister = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
-    registerUser(email, password);
+    const name = e.target.name.value;
+    const photo = e.target.photo.value;
+    const confirmPassword = e.target.confirmPassword.value;
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Invalid email format");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    registerUser(email, password)
+      .then((result) => {
+        setUser(result.user);
+      })
+      .catch((error) => setError(error.message.split("/")[1]));
     console.log(email, password);
+    setError(null);
   };
 
   return (
@@ -38,6 +59,7 @@ const Register = () => {
         </div>
         <div>
           <h1>Email</h1>
+          {error && <div className="error text-red-700">{error}</div>}
           <input
             name="email"
             type="text"
@@ -56,6 +78,7 @@ const Register = () => {
         </div>
         <div>
           <h1>Confirm Password</h1>
+          {error && <div className="error text-red-700">{error}</div>}
           <input
             name="confirmPassword"
             type="text"
